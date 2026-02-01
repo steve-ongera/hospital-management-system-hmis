@@ -1,11 +1,17 @@
-<script setup></script>
+<script setup>
+// You can leave this empty for now
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <!-- Router will inject the component matching the current route here -->
+  <router-view />
 </template>
 
-<style scoped></style>
+<style>
+/* Optional global styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+</style>
