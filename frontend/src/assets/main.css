@@ -1,0 +1,31 @@
+
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 1rem;
+  animation: fadeUp 0.5s ease-out;
+}
+
+.login-card code {
+  background: rgba(13, 110, 253, 0.1);
+  color: #0d6efd;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

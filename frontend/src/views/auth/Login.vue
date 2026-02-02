@@ -1,48 +1,91 @@
 <template>
-  <div class="login-container">
-    <div class="login-box">
-      <div class="login-header">
-        <h1>Hospital Management System</h1>
-        <p>Please login to continue</p>
-      </div>
+  <div class="login-page d-flex align-items-center justify-content-center">
+    <div class="card login-card shadow-lg border-0">
+      <div class="card-body p-4 p-md-5">
 
-      <form @submit.prevent="handleLogin" class="login-form">
-        <div v-if="authStore.error" class="error-message">
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <i class="bi bi-hospital display-4 text-primary mb-3"></i>
+          <h4 class="fw-bold mb-1">Hospital Management System</h4>
+          <p class="text-muted small">Please login to continue</p>
+        </div>
+
+        <!-- Error -->
+        <div
+          v-if="authStore.error"
+          class="alert alert-danger alert-dismissible fade show"
+          role="alert"
+        >
           {{ authStore.error }}
+          <button
+            type="button"
+            class="btn-close"
+            @click="authStore.clearError()"
+          ></button>
         </div>
 
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            id="username"
-            v-model="credentials.username"
-            type="text"
-            required
-            placeholder="Enter your username"
-          />
+        <!-- Form -->
+        <form @submit.prevent="handleLogin">
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="bi bi-person me-2"></i>Username
+            </label>
+            <input
+              v-model="credentials.username"
+              type="text"
+              class="form-control form-control-lg"
+              placeholder="Enter your username"
+              required
+              :disabled="authStore.loading"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">
+              <i class="bi bi-key me-2"></i>Password
+            </label>
+            <div class="input-group input-group-lg">
+              <input
+                v-model="credentials.password"
+                :type="showPassword ? 'text' : 'password'"
+                class="form-control"
+                placeholder="Enter your password"
+                required
+                :disabled="authStore.loading"
+              />
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                @click="togglePasswordVisibility"
+              >
+                <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-lg w-100"
+            :disabled="authStore.loading"
+          >
+            <span
+              v-if="authStore.loading"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
+            {{ authStore.loading ? 'Logging in...' : 'Login' }}
+          </button>
+        </form>
+
+        <!-- Demo -->
+        <div class="bg-light rounded p-3 mt-4 small">
+          <strong class="d-block mb-2">
+            <i class="bi bi-info-circle me-1"></i> Demo Credentials
+          </strong>
+          <div>Doctor: <code>doctor1</code> / <code>password123</code></div>
+          <div>Nurse: <code>nurse1</code> / <code>password123</code></div>
+          <div>Pharmacist: <code>pharmacist1</code> / <code>password123</code></div>
         </div>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            v-model="credentials.password"
-            type="password"
-            required
-            placeholder="Enter your password"
-          />
-        </div>
-
-        <button type="submit" class="btn-login" :disabled="authStore.loading">
-          {{ authStore.loading ? 'Logging in...' : 'Login' }}
-        </button>
-      </form>
-
-      <div class="demo-credentials">
-        <p><strong>Demo Credentials:</strong></p>
-        <p>Doctor: doctor1 / password123</p>
-        <p>Nurse: nurse1 / password123</p>
-        <p>Pharmacist: pharmacist1 / password123</p>
       </div>
     </div>
   </div>
@@ -56,127 +99,52 @@ import { useAuthStore } from '../../stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 
+const showPassword = ref(false)
+
 const credentials = ref({
   username: '',
   password: '',
 })
 
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
+}
+
 const handleLogin = async () => {
-  try {
-    await authStore.login(credentials.value)
-    router.push(`/${authStore.user.role}`)
-  } catch (error) {
-    console.error('Login failed:', error)
-  }
+  await authStore.login(credentials.value)
+  router.push(`/${authStore.user.role}`)
 }
 </script>
 
-<style scoped>
-.login-container {
+<style>
+.login-page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
 }
 
-.login-box {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  padding: 40px;
+.login-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  border-radius: 1rem;
+  animation: fadeUp 0.5s ease-out;
 }
 
-.login-header {
-  text-align: center;
-  margin-bottom: 30px;
+.login-card code {
+  background: rgba(13, 110, 253, 0.1);
+  color: #0d6efd;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
-.login-header h1 {
-  color: #333;
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.login-header p {
-  color: #666;
-  font-size: 14px;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  color: #333;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.form-group input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 14px;
-  transition: border-color 0.3s;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.btn-login {
-  padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.btn-login:hover:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-.btn-login:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.error-message {
-  background: #fee;
-  color: #c33;
-  padding: 12px;
-  border-radius: 5px;
-  font-size: 14px;
-  text-align: center;
-}
-
-.demo-credentials {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
-  font-size: 12px;
-  color: #666;
-  text-align: center;
-}
-
-.demo-credentials p {
-  margin: 5px 0;
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
+
